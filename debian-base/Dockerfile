@@ -4,6 +4,7 @@ MAINTAINER Ash <tuxdude.io@gmail.com>
 
 # Install a base set of packages which we will use
 RUN export DEBIAN_FRONTEND=noninteractive && \
+    apt-get clean && \
     apt-get -y update && \
     apt-get -y --no-install-recommends install \
     apt-utils \
