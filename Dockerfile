@@ -2,6 +2,13 @@
 FROM debian:jessie-backports
 MAINTAINER Ash <tuxdude.io@gmail.com>
 
+# Base Packages
+# apt-utils build-essential supervisor locales git tar vim-nox wget curl dnsutils
+# netcat traceroute net-tools nmap
+
+# Java
+# openjdk8-jdk
+
 # Install a base set of packages which we will use
 RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get clean && \
@@ -22,6 +29,21 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     net-tools \
     nmap \
     openjdk-8-jdk \
+    maven \
+    autoconf \
+    automake \
+    libtool \
+    cmake \
+    zlib1g-dev \
+    pkg-config \
+    libssl-dev \
+    snappy \
+    libsnappy-dev \
+    bzip2 \
+    libbz2-dev \
+    libjansson-dev \
+    fuse \
+    libfuse-dev \
     && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
@@ -45,5 +67,54 @@ ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
 #    && tar -C /usr/local -xzf golang.tar.gz \
 #    && rm golang.tar.gz
 # ENV PATH /usr/local/go/bin:$PATH
+
+# apt-get Hadoop dependencies
+# maven autoconf automake libtool cmake zlib1g-dev pkg-config libssl-dev
+# snappy libsnappy-dev bzip2 libbz2-dev libjansson-dev fuse libfuse-dev
+
+# Download, Build and Install Protobufs (Hadoop Dependency) and Hadoop
+RUN export PROTOBUF_VERSION=2.5.0 && \
+    export HADOOP_VERSION=2.7.2 && \
+    export PROTOBUF_SRC_URL=https://github.com/google/protobuf/releases/download/v\$PROTOBUF_VERSION/protobuf-\$PROTOBUF_VERSION.tar.gz && \
+    export HADOOP_SRC_URL=http://download.nextag.com/apache/hadoop/common/hadoop-\$HADOOP_VERSION/hadoop-\$HADOOP_VERSION-src.tar.gz && \
+    export HADOOP_SRC_ASC_URL=https://dist.apache.org/repos/dist/release/hadoop/common/hadoop-\$HADOOP_VERSION/hadoop-\$HADOOP_VERSION-src.tar.gz.asc && \
+    export HADOOP_SRC_KEYS_URL=https://dist.apache.org/repos/dist/release/hadoop/common/KEYS && \
+    export HADOOP_SRC_SHA256= && \
+    export HADOOP_TEMP=/var/tmp/hadoop && \
+    export PROTOBUF_BUILD_DIR=\$HADOOP_TEMP/protobuf-build && \
+    export PROTOBUF_SRC_TARBALL=protobuf-\$PROTOBUF_VERSION.tar.gz && \
+    export PROTOBUF_SRC_DIR=protobuf-\$PROTOBUF_VERSION && \
+    export HADOOP_BUILD_DIR=\$HADOOP_TEMP/hadoop-build && \
+    export HADOOP_SRC_TARBALL=hadoop-\$HADOOP_VERSION-src.tar.gz && \
+    export HADOOP_SRC_DIR=hadoop-\$HADOOP_VERSION-src && \
+    export HADOOP_DIST_TARBALL=\$HADOOP_BUILD_DIR/\$HADOOP_SRC_DIR/hadoop-dist/target/hadoop-dist-\$HADOOP_VERSION.tar.gz && \
+    export HADOOP_DIST_EXTRACT_DIR=/opt && \
+    export HADOOP_DIST_TARGET_DIR=/opt/hadoop-\$HADOOP_VERSION && \
+    export HADOOP_DIST_SYMLINK_DIR=/opt/hadoop && \
+    mkdir -p \$PROTOBUF_BUILD_DIR && \
+    pushd \$PROTOBUF_BUILD_DIR && \
+        wget PROTOBUF_SRC_URL && \
+        tar xvf \$PROTOBUF_SRC_TARBALL && \
+        pushd \$PROTOBUF_SRC_DIR && \
+            ./configure && \
+            make && \
+            make check && \
+            make install && \
+        popd && \
+    popd && \
+    mkdir -p \$HADOOP_BUILD_DIR && \
+    pushd \$HADOOP_BUILD_DIR && \
+        wget \$HADOOP_SRC_URL && \
+        tar xvf \$HADOOP_SRC_TARBALL && \
+        pushd \$HADOOP_SRC_DIR && \
+            mvn clean && \
+            mvn package -Pdist,native -Dtar -Drequire.snappy -Drequire.openssl -DskipTests && \
+        popd && \
+    popd && \
+    mkdir -p \$HADOOP_DIST_EXTRACT_DIR && \
+    pushd \$HADOOP_DIST_EXTRACT_DIR && \
+        tar xvf \$HADOOP_DIST_TARBALL && \
+        ln -sf \$HADOOP_DIST_TARGET_DIR \$HADOOP_DIST_SYMLINK_DIR && \
+    popd
 
 CMD ["/bin/bash"]
