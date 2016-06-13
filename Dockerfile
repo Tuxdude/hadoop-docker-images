@@ -133,4 +133,8 @@ RUN bash -c 'export PROTOBUF_VERSION=2.5.0 && \
     popd && \
     rm -rf $PROTOBUF_BUILD_DIR $HADOOP_BUILD_DIR $HADOOP_TEMP $MAVEN_CACHE'
 
+# Setup HADOOP_PREFIX and add hadoop binaries to PATH
+ENV HADOOP_PREFIX /opt/hadoop
+ENV PATH $PATH:$HADOOP_PREFIX/bin
+
 CMD ["/bin/bash"]
