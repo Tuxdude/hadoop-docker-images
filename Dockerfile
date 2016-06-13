@@ -63,6 +63,9 @@ ENV LC_ALL C.UTF-8
 # Set JAVA_HOME
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
 
+# Set LD_LIBRARY_PATH
+ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:/usr/local/lib
+
 # Optional Golang
 #RUN export GOLANG_VERSION="1.5.1" && \
 #    export GOLANG_DOWNLOAD_URL="https://golang.org/dl/go$GOLANG_VERSION.linux-amd64.tar.gz" && \
