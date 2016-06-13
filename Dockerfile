@@ -106,7 +106,7 @@ RUN bash -c 'export PROTOBUF_VERSION=2.5.0 && \
     mkdir -p $HADOOP_BUILD_DIR && \
     pushd $HADOOP_BUILD_DIR && \
         wget $HADOOP_SRC_URL && \
-        echo "$HADOOP_SRC_SHA256 $HADOOP_SRC_TARBALL" | shasum -a 256 -c && \
+        echo "$HADOOP_SRC_SHA256  $HADOOP_SRC_TARBALL" | shasum -a 256 -c && \
         wget $HADOOP_SRC_KEYS_URL && \
         wget $HADOOP_SRC_ASC_URL && \
         gpg --import KEYS && \
