@@ -10,7 +10,11 @@ MAINTAINER Ash <tuxdude.io@gmail.com>
 # openjdk8-jdk
 
 # Install a base set of packages which we will use
+# The httpredir.debian.org source redirects requests to different mirrors and
+# few fail transiently causing the builds to fail
+# Instead use mirrors.kernel.org source
 RUN export DEBIAN_FRONTEND=noninteractive && \
+    find /etc/apt/sources.list* -type f -exec sed -i 's/httpredir.debian.org/mirrors.kernel.org/g' {} + && \
     apt-get clean && \
     apt-get -y update && \
     apt-get -y --no-install-recommends install \
