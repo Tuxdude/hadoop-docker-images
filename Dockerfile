@@ -81,6 +81,7 @@ RUN bash -c 'export PROTOBUF_VERSION=2.5.0 && \
     export HADOOP_SRC_ASC_URL="https://dist.apache.org/repos/dist/release/hadoop/common/hadoop-$HADOOP_VERSION/hadoop-$HADOOP_VERSION-src.tar.gz.asc" && \
     export HADOOP_SRC_KEYS_URL="https://dist.apache.org/repos/dist/release/hadoop/common/KEYS" && \
     export HADOOP_SRC_SHA256="7d48e61b5464a76543fecf5655d06215cf8674d248b28bc74f613bc8aa047d33" && \
+    export MAVEN_CACHE="/root/.m2" && \
     export HADOOP_TEMP="/var/tmp/hadoop" && \
     export PROTOBUF_BUILD_DIR="$HADOOP_TEMP/protobuf-build" && \
     export PROTOBUF_SRC_TARBALL="protobuf-$PROTOBUF_VERSION.tar.gz" && \
@@ -122,6 +123,7 @@ RUN bash -c 'export PROTOBUF_VERSION=2.5.0 && \
     pushd $HADOOP_DIST_EXTRACT_DIR && \
         tar xvf $HADOOP_DIST_TARBALL && \
         ln -sf $HADOOP_DIST_TARGET_DIR $HADOOP_DIST_SYMLINK_DIR && \
-    popd'
+    popd && \
+    rm -rf $PROTOBUF_BUILD_DIR $HADOOP_BUILD_DIR $HADOOP_TEMP $MAVEN_CACHE'
 
 CMD ["/bin/bash"]
